@@ -49,24 +49,33 @@ export default function E2EETEST() {
   };
   return (
     <div className="m-5">
-      <TextField
-        value={textInput}
-        onChange={(event) => {
-          setTextInput(event.target.value);
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
         }}
-        id="standard-basic"
-        label="Password"
-        variant="standard"
-      />
-
-      <Button
-        onClick={() => {
-          decryptData(textInput);
-        }}
-        variant="outlined"
       >
-        Submit
-      </Button>
+        <TextField
+          value={textInput}
+          onChange={(event) => {
+            setTextInput(event.target.value);
+          }}
+          id="standard-basic"
+          label="Password"
+          variant="standard"
+        />
+
+        <Button
+          onClick={() => {
+            decryptData(textInput);
+          }}
+          variant="outlined"
+        >
+          Decrypt
+        </Button>
+      </div>
       <Modal
         open={open}
         onClose={handleClose}
@@ -86,8 +95,6 @@ export default function E2EETEST() {
           </Button>
         </Box>
       </Modal>
-
-      <p>{encryptedData}</p>
     </div>
   );
 }

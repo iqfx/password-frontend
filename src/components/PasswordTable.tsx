@@ -93,7 +93,7 @@ export default function PasswordTable() {
           alignItems: "center",
         }}
       >
-        <Typography variant="h5">Welcome {user?.name}</Typography>
+        <Typography variant="h5">Welcome, {user?.name}</Typography>
       </Box>
     );
   }
