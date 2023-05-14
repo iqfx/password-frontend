@@ -1,6 +1,6 @@
 import Navbar from "../components/NavBar";
 import E2EETEST from "@/components/e2eeTest";
-import PasswordTable from "@/components/passwordTable";
+import PasswordTable from "@/components/PasswordTable";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { Avatar } from "@mui/material";
 
