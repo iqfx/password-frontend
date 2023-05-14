@@ -1,5 +1,8 @@
 import Navbar from "../components/NavBar";
-import { useUser } from '@auth0/nextjs-auth0/client';
+import E2EETEST from "@/components/e2eeTest";
+import PasswordTable from "@/components/passwordTable";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { Avatar } from "@mui/material";
 
 export default function Home() {
   const { user, error, isLoading } = useUser();
@@ -10,12 +13,15 @@ export default function Home() {
     <main className="">
       <Navbar />
       {user && (
-      <div>
-        <img src={user.picture} alt={user.name} />
-        <h2>{user.name}</h2>
-        <p>{user.email}</p>
-      </div>
-    )}
+        <div>
+          <E2EETEST />
+          <PasswordTable />
+          <Avatar src={user.picture} alt={user.name} />
+
+          <h2>{user.name}</h2>
+          <p>{user.email}</p>
+        </div>
+      )}
     </main>
   );
 }
