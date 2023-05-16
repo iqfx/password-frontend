@@ -26,9 +26,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm ci, build and test
+      - name: npm i, build and test
         run: |
-          npm ci
+          npm i
           npm run build --if-present
   build_image:
     # The type of runner that the job will run on
