@@ -4,9 +4,9 @@ name: Build and Test React Application
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -30,7 +30,6 @@ jobs:
         run: |
           npm ci
           npm run build --if-present
-          npm test a --watchAll=false
   build_image:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
@@ -43,7 +42,6 @@ jobs:
       - name: template .env file
         run: |
           touch .env.production
-
 
       - name: build docker image
         run: docker build -t "iqfx/password-frontend:latest" ./

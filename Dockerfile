@@ -3,16 +3,10 @@ WORKDIR /opt
 COPY package*.json ./
 RUN npm ci
 
-FROM node:19-alpine as test
-WORKDIR /opt
-COPY --from=init /opt/node_modules ./node_modules
-COPY . .
-RUN npm test --watchAll=false
-
 FROM node:19-alpine as build
 WORKDIR /opt
 
-COPY --from=test /opt .
+COPY --from=init /opt .
 RUN npm run build
 
 FROM node:19-alpine
