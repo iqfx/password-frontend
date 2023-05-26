@@ -1,12 +1,13 @@
 import { Alert, AlertTitle, Box, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState } from "react";
+import { useState, useEffect   } from "react";
 import EditPasswords from "@/components/EditModal";
 import DeleteModal from "./DeleteModal";
 import { useUser } from "@auth0/nextjs-auth0/client";
+
 const columns: GridColDef[] = [
   {
-    field: "passwordName",
+    field: "name",
     headerName: "Name",
     flex: 1,
     editable: false,
@@ -47,30 +48,30 @@ const columns: GridColDef[] = [
   },
 ];
 const rows = [
-  { id: 1, passwordName: "Snow", userName: "Jon", password: "hjdshgh" },
-  { id: 2, passwordName: "Lannister", userName: "Cersei", password: "hroeih" },
-  { id: 3, passwordName: "Lannister", userName: "Jaime", password: "jkdsbvkd" },
-  { id: 4, passwordName: "Stark", userName: "Arya", password: "FDSGGW12341" },
+  { id: 1, name: "Snow", userName: "Jon", password: "hjdshgh" },
+  { id: 2, name: "Lannister", userName: "Cersei", password: "hroeih" },
+  { id: 3, name: "Lannister", userName: "Jaime", password: "jkdsbvkd" },
+  { id: 4, name: "Stark", userName: "Arya", password: "FDSGGW12341" },
   {
     id: 5,
-    passwordName: "Targaryen",
+    name: "Targaryen",
     userName: "Daenerys",
     password: "hfhuo23",
   },
   {
     id: 6,
-    passwordName: "Melisandre",
+    name: "Melisandre",
     userName: null,
     password: "fqjehvjabqv",
   },
   {
     id: 7,
-    passwordName: "Clifford",
+    name: "Clifford",
     userName: "Ferrara",
     password: "dslbvgjdb",
   },
-  { id: 8, passwordName: "Frances", userName: "Rossini", password: "sdkhgown" },
-  { id: 9, passwordName: "Roxie", userName: "Harvey", password: "hfslkhvl" },
+  { id: 8, name: "Frances", userName: "Rossini", password: "sdkhgown" },
+  { id: 9, name: "Roxie", userName: "Harvey", password: "hfslkhvl" },
 ];
 export default function PasswordTable() {
   const { user, error, isLoading } = useUser();
@@ -79,6 +80,22 @@ export default function PasswordTable() {
   if (error) return <div>{error.message}</div>;
   const [copiedData, setCopiedData] = useState("");
   const [open, setOpen] = useState(false);
+  const [data, setData] = useState("");
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('/api/password');
+        const jsonData = await response.json();
+        setData(jsonData);
+        console.log(jsonData)
+      } catch (error) {
+        console.log('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const handleOpen = (data: string) => {
     setCopiedData(data);
     setOpen(true);
@@ -137,7 +154,7 @@ export default function PasswordTable() {
         }}
       >
         <DataGrid
-          rows={rows}
+          rows={data}
           components={{ Toolbar: DataGridTitle }}
           onClipboardCopy={(copiedString) => handleOpen(copiedString)}
           columns={columns}
