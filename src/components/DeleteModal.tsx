@@ -17,6 +17,15 @@ export default function DeleteModal(password: any) {
   const [deletemodal, setDeletemodal] = useState(false);
   const handleOpen = () => setDeletemodal(true);
   const handleClose = () => setDeletemodal(false);
+
+  const submitdelete = async () => {
+    await fetch("/api/password/" + password.password.row.id, {
+      method: "delete",
+    }).then(() => {
+      handleClose();
+    });
+  };
+
   return (
     <div>
       <Button onClick={handleOpen} color="error" startIcon={<DeleteIcon />}>
@@ -48,6 +57,7 @@ export default function DeleteModal(password: any) {
               variant="contained"
               color="error"
               endIcon={<DeleteIcon />}
+              onClick={submitdelete}
             >
               Delete
             </Button>

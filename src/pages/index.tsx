@@ -1,3 +1,4 @@
+import AddPasswordModal from "@/components/AddPasswordModal";
 import Navbar from "../components/NavBar";
 import E2EETEST from "@/components/e2eeTest";
 import PasswordTable from "@/components/PasswordTable";
@@ -16,6 +17,7 @@ export default function Home() {
         {user && (
           <div>
             <E2EETEST />
+            <AddPasswordModal />
             <PasswordTable />
           </div>
         )}

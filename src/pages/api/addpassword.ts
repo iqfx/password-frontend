@@ -1,19 +1,19 @@
 import { getAccessToken, withApiAuthRequired } from "@auth0/nextjs-auth0";
 
 export default withApiAuthRequired(async function products(req, res) {
-  // If your Access Token is expired and you have a Refresh Token
-  // `getAccessToken` will fetch you a new one using the `refresh_token` grant
   const { accessToken } = await getAccessToken(req, res, {
     scopes: ["vault:default"],
   });
+  // return res.status(200).json(req.body);
   fetch(process.env.PASSWORD_SERVICE_URL + "/password", {
+    method: "post",
     headers: {
       Authorization: `Bearer ${accessToken}`,
+      "Content-type": "application/json",
+      Accept: "application/json",
     },
-  })
-    .then((response) => response.json())
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch((error) => res.status(500).json({ error }));
+    body: req.body,
+  }).then((response) => {
+    return res.json(response.json);
+  });
 });

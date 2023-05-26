@@ -1,100 +1,74 @@
 import { Alert, AlertTitle, Box, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState, useEffect   } from "react";
+import { useState, useEffect } from "react";
 import EditPasswords from "@/components/EditModal";
 import DeleteModal from "./DeleteModal";
 import { useUser } from "@auth0/nextjs-auth0/client";
 
-const columns: GridColDef[] = [
-  {
-    field: "name",
-    headerName: "Name",
-    flex: 1,
-    editable: false,
-  },
-  {
-    field: "userName",
-    headerName: "Username",
-    flex: 1,
-    editable: false,
-  },
-  {
-    field: "password",
-    headerName: "Password",
-    flex: 1,
-    editable: false,
-  },
-  {
-    field: "edit",
-    headerName: "Edit",
-    sortable: false,
-    flex: 1,
-    renderCell: (params) => {
-      const [parameters, setParameters] = useState(params);
-
-      return (
-        <EditPasswords password={parameters} setParameters={setParameters} />
-      );
-    },
-  },
-  {
-    field: "delete",
-    headerName: "Delete",
-    sortable: false,
-    flex: 1,
-    renderCell: (params) => {
-      return <DeleteModal password={params} />;
-    },
-  },
-];
-const rows = [
-  { id: 1, name: "Snow", userName: "Jon", password: "hjdshgh" },
-  { id: 2, name: "Lannister", userName: "Cersei", password: "hroeih" },
-  { id: 3, name: "Lannister", userName: "Jaime", password: "jkdsbvkd" },
-  { id: 4, name: "Stark", userName: "Arya", password: "FDSGGW12341" },
-  {
-    id: 5,
-    name: "Targaryen",
-    userName: "Daenerys",
-    password: "hfhuo23",
-  },
-  {
-    id: 6,
-    name: "Melisandre",
-    userName: null,
-    password: "fqjehvjabqv",
-  },
-  {
-    id: 7,
-    name: "Clifford",
-    userName: "Ferrara",
-    password: "dslbvgjdb",
-  },
-  { id: 8, name: "Frances", userName: "Rossini", password: "sdkhgown" },
-  { id: 9, name: "Roxie", userName: "Harvey", password: "hfslkhvl" },
-];
 export default function PasswordTable() {
   const { user, error, isLoading } = useUser();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (error) return <div>{error.message}</div>;
   const [copiedData, setCopiedData] = useState("");
   const [open, setOpen] = useState(false);
-  const [data, setData] = useState("");
+  const [data, setData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/password');
+        const response = await fetch("/api/password");
         const jsonData = await response.json();
         setData(jsonData);
-        console.log(jsonData)
+        console.log(jsonData);
       } catch (error) {
-        console.log('Error fetching data:', error);
+        console.log("Error fetching data:", error);
       }
     };
 
     fetchData();
   }, []);
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
+
+  const columns: GridColDef[] = [
+    {
+      field: "name",
+      headerName: "Name",
+      flex: 1,
+      editable: false,
+    },
+    {
+      field: "userName",
+      headerName: "Username",
+      flex: 1,
+      editable: false,
+    },
+    {
+      field: "password",
+      headerName: "Password",
+      flex: 1,
+      editable: false,
+    },
+    {
+      field: "edit",
+      headerName: "Edit",
+      sortable: false,
+      flex: 1,
+      renderCell: (params) => {
+        const [parameters, setParameters] = useState(params);
+
+        return (
+          <EditPasswords password={parameters} setParameters={setParameters} />
+        );
+      },
+    },
+    {
+      field: "delete",
+      headerName: "Delete",
+      sortable: false,
+      flex: 1,
+      renderCell: (params) => {
+        return <DeleteModal password={params} />;
+      },
+    },
+  ];
 
   const handleOpen = (data: string) => {
     setCopiedData(data);
