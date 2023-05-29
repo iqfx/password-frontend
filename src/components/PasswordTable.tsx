@@ -1,29 +1,29 @@
 import { Alert, AlertTitle, Box, Snackbar, Typography } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import EditPasswords from "@/components/EditModal";
 import DeleteModal from "./DeleteModal";
 import { useUser } from "@auth0/nextjs-auth0/client";
+import AddPasswordModal from "./AddPasswordModal";
 
 export default function PasswordTable() {
   const { user, error, isLoading } = useUser();
   const [copiedData, setCopiedData] = useState("");
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch("/api/password");
-        const jsonData = await response.json();
-        setData(jsonData);
-        console.log(jsonData);
-      } catch (error) {
-        console.log("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
+  let fetchData = useCallback(async () => {
+    try {
+      const response = await fetch("/api/password");
+      const jsonData = await response.json();
+      setData(jsonData);
+      console.log(jsonData);
+    } catch (error) {
+      console.log("Error fetching data:", error);
+    }
   }, []);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
 
@@ -52,11 +52,9 @@ export default function PasswordTable() {
       sortable: false,
       flex: 1,
       renderCell: (params) => {
-        const [parameters, setParameters] = useState(params);
+        const [parameters] = useState(params);
 
-        return (
-          <EditPasswords password={parameters} setParameters={setParameters} />
-        );
+        return <EditPasswords password={parameters} fetchData={fetchData} />;
       },
     },
     {
@@ -65,7 +63,7 @@ export default function PasswordTable() {
       sortable: false,
       flex: 1,
       renderCell: (params) => {
-        return <DeleteModal password={params} />;
+        return <DeleteModal password={params} fetchData={fetchData} />;
       },
     },
   ];
@@ -91,6 +89,7 @@ export default function PasswordTable() {
   const handleClose = () => setOpen(false);
   return (
     <div>
+      <AddPasswordModal fetchData={fetchData} />
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={open}

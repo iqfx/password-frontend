@@ -13,7 +13,8 @@ export default withApiAuthRequired(async function products(req, res) {
   })
     .then((response) => response.json())
     .then((data) => {
-      res.status(200).json(data);
+      res.json(data);
+      res.status(data.status).end();
     })
     .catch((error) => res.status(500).json({ error }));
 });

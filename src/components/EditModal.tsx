@@ -23,13 +23,57 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-
-export default function EditPasswords({ password, setParameters }: any) {
+interface FormData {
+  Name: string;
+  UserName: string;
+  Password: string;
+  URL: string;
+}
+interface EditModalParams {
+  password: any;
+  fetchData: () => void;
+}
+export default function EditPasswords({
+  password,
+  fetchData,
+}: EditModalParams) {
   const [editmodal, setEditmodal] = useState(false);
   const handleOpen = () => setEditmodal(true);
-  const handleClose = () => setEditmodal(false);
-  const handleChange = () => {
-    setParameters(password);
+  const handleClose = () => {
+    handleReset();
+    setEditmodal(false);
+  };
+
+  const handleReset = () => {
+    setFormData({
+      Name: password.row.name,
+      UserName: password.row.userName,
+      Password: password.row.password,
+      URL: password.row.url,
+    });
+  };
+
+  const [formData, setFormData] = useState<FormData>({
+    Name: password.row.name,
+    UserName: password.row.userName,
+    Password: password.row.password,
+    URL: password.row.url,
+  });
+  const handleChange = (e: any) => {
+    const { name, value } = e.target;
+    setFormData((formData) => ({
+      ...formData,
+      [name]: value,
+    }));
+  };
+  const handleSubmit = async () => {
+    await fetch("/api/password/" + password.row.id, {
+      method: "PUT",
+      body: JSON.stringify(formData),
+    }).then(() => {
+      handleClose();
+      fetchData();
+    });
   };
   return (
     <div>
@@ -54,37 +98,47 @@ export default function EditPasswords({ password, setParameters }: any) {
             <Typography id="transition-modal-title" variant="h6" component="h2">
               Edit {password.row.passwordName}
             </Typography>
-            <Typography id="transition-modal-description" sx={{ mt: 2 }}>
+            <Typography
+              component={"span"}
+              id="transition-modal-description"
+              sx={{ mt: 2 }}
+            >
               <Stack spacing={2}>
                 <TextField
                   style={{ marginTop: "1em" }}
                   id="passwordName"
                   label="Name"
+                  name="Name"
                   variant="outlined"
-                  defaultValue={password.row.passwordName}
+                  value={formData.Name}
                   onChange={handleChange}
                 />
                 <TextField
                   style={{ marginTop: "1em" }}
                   id="username"
                   label="Username"
+                  name="UserName"
                   variant="outlined"
-                  defaultValue={password.row.userName}
+                  value={formData.UserName}
                   onChange={handleChange}
                 />
                 <TextField
                   style={{ marginTop: "1em" }}
                   id="password"
                   label="Password"
+                  name="Password"
                   variant="outlined"
-                  defaultValue={password.row.password}
+                  value={formData.Password}
                   onChange={handleChange}
                 />
                 <TextField
                   style={{ marginTop: "1em" }}
                   id="url"
+                  name="URL"
                   label="URL"
                   variant="outlined"
+                  value={formData.URL}
+                  onChange={handleChange}
                 />
               </Stack>
             </Typography>
@@ -92,6 +146,9 @@ export default function EditPasswords({ password, setParameters }: any) {
               style={{ float: "right", marginTop: "1em" }}
               variant="contained"
               endIcon={<SendIcon />}
+              onClick={() => {
+                handleSubmit();
+              }}
             >
               Save
             </Button>

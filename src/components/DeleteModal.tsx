@@ -13,16 +13,22 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export default function DeleteModal(password: any) {
+
+interface DeleteModalProps {
+  password: any;
+  fetchData: () => void;
+}
+
+export default function DeleteModal({ password, fetchData }: DeleteModalProps) {
   const [deletemodal, setDeletemodal] = useState(false);
   const handleOpen = () => setDeletemodal(true);
   const handleClose = () => setDeletemodal(false);
-
   const submitdelete = async () => {
-    await fetch("/api/password/" + password.password.row.id, {
+    await fetch("/api/password/" + password.id, {
       method: "delete",
     }).then(() => {
       handleClose();
+      fetchData();
     });
   };
 
@@ -47,7 +53,7 @@ export default function DeleteModal(password: any) {
         <Fade in={deletemodal}>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
-              Delete {password.password.row.passwordName}
+              Delete {password.passwordName}
             </Typography>
             <Typography id="transition-modal-description" sx={{ mt: 2 }}>
               Are you sure you want to delete this entry?

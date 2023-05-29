@@ -1,8 +1,20 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  IconButton,
+  InputAdornment,
+  InputLabel,
+  Modal,
+  OutlinedInput,
+  Typography,
+} from "@mui/material";
 import * as Crypto from "crypto-js";
 import { useState } from "react";
 import ErrorIcon from "@mui/icons-material/Error";
-const sensitiveData = "This is sensitive data je bolle moeder";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+
+const sensitiveData = "This is sensitive data";
 const encryptionKey = Crypto.enc.Utf8.parse("encryptionKey123");
 var iv = Crypto.enc.Hex.parse("00000000000000000000000000000000");
 
@@ -30,9 +42,17 @@ export default function E2EETEST() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleMouseDownPassword = (
+    event: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    event.preventDefault();
+  };
   const decryptData = (password: string) => {
     try {
-      const sensitiveData = Crypto.AES.decrypt(
+      const decryptedData = Crypto.AES.decrypt(
         encryptedData,
         Crypto.enc.Utf8.parse(password),
         {
@@ -41,8 +61,7 @@ export default function E2EETEST() {
           padding: Crypto.pad.ZeroPadding,
         }
       ).toString(Crypto.enc.Utf8);
-
-      console.log(sensitiveData);
+      console.log(decryptedData);
     } catch (error) {
       handleOpen();
     }
@@ -57,7 +76,33 @@ export default function E2EETEST() {
           width: "100%",
         }}
       >
-        <TextField
+        <FormControl sx={{ m: 1, width: "25ch" }} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-password">
+            Password
+          </InputLabel>
+          <OutlinedInput
+            value={textInput}
+            onChange={(event) => {
+              setTextInput(event.target.value);
+            }}
+            id="outlined-adornment-password"
+            type={showPassword ? "text" : "password"}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+          />
+        </FormControl>
+        {/* <TextField
           value={textInput}
           onChange={(event) => {
             setTextInput(event.target.value);
@@ -65,7 +110,8 @@ export default function E2EETEST() {
           id="standard-basic"
           label="Password"
           variant="standard"
-        />
+          type="password"
+        /> */}
 
         <Button
           onClick={() => {

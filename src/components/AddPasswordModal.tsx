@@ -9,7 +9,7 @@ import {
   Alert,
   Snackbar,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import AddIcon from "@mui/icons-material/Add";
 import SendIcon from "@mui/icons-material/Send";
@@ -32,8 +32,10 @@ interface FormData {
   Password: string;
   URL: string;
 }
-
-export default function AddPasswordModal() {
+interface PasswordModalParams {
+  fetchData: () => void;
+}
+export default function AddPasswordModal({ fetchData }: PasswordModalParams) {
   const [Addmodal, setAddmodal] = useState(false);
   const handleOpen = () => setAddmodal(true);
   const handleClose = () => setAddmodal(false);
@@ -44,6 +46,17 @@ export default function AddPasswordModal() {
     Password: "",
     URL: "",
   });
+  const handleReset = () => {
+    setFormData({
+      Name: "",
+      UserName: "",
+      Password: "",
+      URL: "",
+    }); // Reset the formData state to an empty object
+  };
+  useEffect(() => {
+    handleReset();
+  }, []);
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((formData) => ({
@@ -58,6 +71,7 @@ export default function AddPasswordModal() {
     }).then(() => {
       handleClose();
       setOpenalert(true);
+      fetchData();
     });
   };
 
