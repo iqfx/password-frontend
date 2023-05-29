@@ -102,17 +102,6 @@ export default function E2EETEST() {
             label="Password"
           />
         </FormControl>
-        {/* <TextField
-          value={textInput}
-          onChange={(event) => {
-            setTextInput(event.target.value);
-          }}
-          id="standard-basic"
-          label="Password"
-          variant="standard"
-          type="password"
-        /> */}
-
         <Button
           onClick={() => {
             decryptData(textInput);
