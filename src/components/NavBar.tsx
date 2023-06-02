@@ -16,6 +16,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { useUser } from '@auth0/nextjs-auth0/client';
+import Link from "next/link";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -101,10 +102,10 @@ export default function PrimarySearchAppBar() {
     >
       <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
       {!user && (
-        <MenuItem onClick={handleMenuClose}><a href="/api/auth/login">Login</a></MenuItem>
+        <MenuItem onClick={handleMenuClose}><Link href="/api/auth/login">Login</Link></MenuItem>
       )}
       {user && (
-        <MenuItem onClick={handleMenuClose}><a href="/api/auth/logout">Logout</a></MenuItem>
+        <MenuItem onClick={handleMenuClose}><Link href="/api/auth/logout">Logout</Link></MenuItem>
       )}
     </Menu>
   );

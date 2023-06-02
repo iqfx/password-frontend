@@ -11,6 +11,7 @@ export default function PasswordTable() {
   const [copiedData, setCopiedData] = useState("");
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
+
   let fetchData = useCallback(async () => {
     try {
       const response = await fetch("/api/password");
@@ -52,9 +53,7 @@ export default function PasswordTable() {
       sortable: false,
       flex: 1,
       renderCell: (params) => {
-        const [parameters] = useState(params);
-
-        return <EditPasswords password={parameters} fetchData={fetchData} />;
+        return <EditPasswords password={params} fetchData={fetchData} />;
       },
     },
     {
