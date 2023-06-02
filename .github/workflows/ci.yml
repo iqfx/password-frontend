@@ -66,6 +66,9 @@ jobs:
 
       - name: Apply deployment
         run: kubectl apply -f kubernetes/deployment.yml
-
+      - name: Create secrets
+        run: |
+          kubectl delete secret dockerhub-secret-frontend --ignore-not-found
+          kubectl create secret docker-registry dockerhub-secret-frontend --docker-username=${{ secrets.DOCKERHUB_USERNAME}} --docker-password=${{ secrets.DOCKERHUB_TOKEN}}
       - name: Restart deployment
         run: kubectl rollout restart deploy password-frontend-app
