@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: password-frontend-ingress-tls
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/rewrite-target-regex: "true"
+    # nginx.ingress.kubernetes.io/auth-url: "http://auth-service.default.svc.cluster.local/auth/verify?route=$request_uri&method=$request_method"
+    nginx.ingress.kubernetes.io/auth-response-headers: X-User, X-Roles
+spec:
+  tls:
+  - hosts:
+    - password.iqfx.nl
+    secretName: password-frontend-ingress-tls
+  rules:
+  - host: password.iqfx.nl
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: password-frontend-service
+            port:
+              number: 80

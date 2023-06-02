@@ -19,4 +19,4 @@ RUN npm prune --production
 RUN npm install -g serve
 RUN npm install -g pm2
 COPY --from=build /opt/ ./
-CMD [ "serve","-s","build","-p","3000" ]
+CMD [ "serve","-s","build","-p","80" ]
