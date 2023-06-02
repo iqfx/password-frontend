@@ -16,7 +16,5 @@ WORKDIR /opt
 COPY package*.json ./
 COPY --from=init /opt/node_modules ./node_modules
 RUN npm prune --production
-RUN npm install -g serve
-RUN npm install -g pm2
 COPY --from=build /opt/ ./
-CMD [ "serve","-s","build","-p","80" ]
+CMD [ "npm","run","start" ]
