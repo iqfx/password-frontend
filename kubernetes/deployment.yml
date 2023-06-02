@@ -1,0 +1,30 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: password-frontend-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: password-frontend-app
+  template:
+    metadata:
+      labels:
+        app: password-frontend-app
+    spec:
+      containers:
+        - name: password-frontend-app
+          image: iqfx/password-frontend:latest
+          ports:
+            - containerPort: 80
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pasword-frontend-service
+spec:
+  selector:
+    app: password-frontend-app
+  ports:
+    - port: 80
