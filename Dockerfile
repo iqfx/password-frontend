@@ -7,6 +7,7 @@ FROM node:19-alpine as build
 WORKDIR /opt
 
 COPY --from=init /opt .
+COPY . /opt
 RUN npm run build
 
 FROM node:19-alpine
