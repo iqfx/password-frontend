@@ -11,17 +11,37 @@ export default function PasswordTable() {
   const [copiedData, setCopiedData] = useState("");
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
+  const [totalRows, setTotalRows] = useState(0);
+
+  // pagination
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 25,
+    page: 0,
+  });
+
+  const HandlePaginationModelChange = async (params: any) => {
+    console.log(params);
+    setPaginationModel(params);
+    await fetchData();
+  };
 
   let fetchData = useCallback(async () => {
     try {
-      const response = await fetch("/api/password");
+      const response = await fetch(
+        "/api/password?pageNumber=" +
+          paginationModel.page +
+          "&pageSize=" +
+          paginationModel.pageSize
+      );
       const jsonData = await response.json();
-      setData(jsonData);
+      setData(jsonData.passwords);
+      setTotalRows(jsonData.totalRows);
       console.log(jsonData);
     } catch (error) {
       console.log("Error fetching data:", error);
     }
-  }, []);
+  }, [paginationModel]);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -130,14 +150,11 @@ export default function PasswordTable() {
           components={{ Toolbar: DataGridTitle }}
           onClipboardCopy={(copiedString) => handleOpen(copiedString)}
           columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: 5,
-              },
-            },
-          }}
-          pageSizeOptions={[5]}
+          pagination
+          paginationMode="server"
+          rowCount={totalRows}
+          paginationModel={paginationModel}
+          onPaginationModelChange={HandlePaginationModelChange}
           checkboxSelection
           disableRowSelectionOnClick
         />

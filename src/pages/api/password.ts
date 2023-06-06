@@ -6,11 +6,19 @@ export default withApiAuthRequired(async function products(req, res) {
   const { accessToken } = await getAccessToken(req, res, {
     scopes: ["vault:default"],
   });
-  fetch(process.env.PASSWORD_SERVICE_URL + "/password", {
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  })
+  const { pageNumber = 1, pageSize = 10 } = req.query;
+  fetch(
+    process.env.PASSWORD_SERVICE_URL +
+      "/password?pageNumber=" +
+      pageNumber +
+      "&pageSize=" +
+      pageSize,
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  )
     .then((response) => response.json())
     .then((data) => {
       res.json(data);
