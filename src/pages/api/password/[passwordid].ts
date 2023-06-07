@@ -7,7 +7,6 @@ export default withApiAuthRequired(async function products(req, res) {
   const { accessToken } = await getAccessToken(req, res, {
     scopes: ["vault:default"],
   });
-  // return res.status(200).json(req.method);
   fetch(
     process.env.PASSWORD_SERVICE_URL +
       "/password/" +
@@ -19,7 +18,7 @@ export default withApiAuthRequired(async function products(req, res) {
         "Content-type": "application/json",
         Accept: "application/json",
       },
-      body: req.body ?? {},
+      body: req.body ? req.body : undefined,
     }
   )
     .then((response) => {

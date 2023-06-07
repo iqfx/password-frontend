@@ -70,6 +70,7 @@ export default function AddPasswordModal({ fetchData }: PasswordModalParams) {
       body: JSON.stringify(formData),
     }).then(() => {
       handleClose();
+      handleReset();
       setOpenalert(true);
       fetchData();
     });
