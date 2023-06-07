@@ -13,6 +13,7 @@ import * as Crypto from "crypto-js";
 import { useState } from "react";
 import ErrorIcon from "@mui/icons-material/Error";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { deriveEncryptionKey } from "./pbkdf2Util";
 
 const sensitiveData = "This is sensitive data";
 const encryptionKey = Crypto.enc.Utf8.parse("encryptionKey123");
@@ -50,6 +51,27 @@ export default function E2EETEST() {
   ) => {
     event.preventDefault();
   };
+
+  async function exampleUsage(): Promise<void> {
+    const password: string = "myStrongPassword";
+    const salt: string = process.env.SALT ?? "test123";
+    const iterations: number = parseInt(process.env.ITERATIONS ?? "1000");
+    const keyLength: number = parseInt(process.env.KEYLENGTH ?? "32"); // 32 bytes = 256 bits
+
+    try {
+      const encryptionKey: string = await deriveEncryptionKey(
+        password,
+        salt,
+        iterations,
+        keyLength
+      );
+      console.log("Derived encryption key:", encryptionKey);
+      // Use the derived encryption key for encryption or decryption operations
+    } catch (error) {
+      console.error("Error deriving encryption key:", error);
+    }
+  }
+  exampleUsage();
   const decryptData = (password: string) => {
     try {
       const decryptedData = Crypto.AES.decrypt(

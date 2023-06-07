@@ -11,6 +11,7 @@ export default withApiAuthRequired(async function products(req, res) {
     process.env.PASSWORD_SERVICE_URL +
       "/password?pageNumber=" +
       pageNumber +
+      1 +
       "&pageSize=" +
       pageSize,
     {
