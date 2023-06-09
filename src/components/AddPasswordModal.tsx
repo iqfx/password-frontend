@@ -25,7 +25,7 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-
+import { encryptData } from "./encryptDataUtil";
 interface FormData {
   Name: string;
   UserName: string;
@@ -40,6 +40,7 @@ export default function AddPasswordModal({ fetchData }: PasswordModalParams) {
   const handleOpen = () => setAddmodal(true);
   const handleClose = () => setAddmodal(false);
   const [openalert, setOpenalert] = useState(false);
+  const [submitForm, setSubmitForm] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     Name: "",
     UserName: "",
@@ -64,18 +65,57 @@ export default function AddPasswordModal({ fetchData }: PasswordModalParams) {
       [name]: value,
     }));
   };
-  const handleSubmit = async () => {
-    await fetch("/api/addpassword", {
-      method: "post",
-      body: JSON.stringify(formData),
-    }).then(() => {
-      handleClose();
-      handleReset();
-      setOpenalert(true);
-      fetchData();
-    });
+
+  const getCookie = () => {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split("; ");
+
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split("=");
+      const cookieName = cookie[0];
+      const cookieValue = cookie[1];
+
+      if (cookieName === "token") {
+        return cookieValue;
+      }
+    }
+
+    return null;
   };
 
+  const handleSubmit = async () => {
+    const encryptionToken = getCookie();
+    if (encryptionToken) {
+      const encryptedPassword = encryptData(formData.Password, encryptionToken);
+      setFormData((formData) => ({
+        ...formData,
+        Password: encryptedPassword,
+      }));
+      setSubmitForm(true);
+    }
+  };
+  useEffect(() => {
+    if (submitForm) {
+      const submitForm = async () => {
+        try {
+          await fetch("/api/addpassword", {
+            method: "post",
+            body: JSON.stringify(formData),
+          });
+
+          handleClose();
+          handleReset();
+          setOpenalert(true);
+          fetchData();
+        } catch (error) {
+          console.error("Error submitting form:", error);
+        }
+      };
+
+      submitForm();
+      setSubmitForm(false);
+    }
+  }, [formData]);
   return (
     <div
       style={{

@@ -10,7 +10,7 @@ import EditPasswords from "@/components/EditModal";
 import DeleteModal from "./DeleteModal";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import AddPasswordModal from "./AddPasswordModal";
-
+import { decryptData } from "./decryptDataUtil";
 export default function PasswordTable() {
   const { user, error, isLoading } = useUser();
   const [copiedData, setCopiedData] = useState("");
@@ -23,7 +23,23 @@ export default function PasswordTable() {
     pageSize: 25,
     page: 0,
   });
+  const getCookie = () => {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split("; ");
 
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split("=");
+      const cookieName = cookie[0];
+      const cookieValue = cookie[1];
+
+      if (cookieName === "token") {
+        return cookieValue;
+      }
+    }
+
+    return null;
+  };
+  const cookie = getCookie();
   const HandlePaginationModelChange = async (params: any) => {
     console.log(params);
     setPaginationModel(params);
@@ -41,7 +57,6 @@ export default function PasswordTable() {
       const jsonData = await response.json();
       setData(jsonData.passwords);
       setTotalRows(jsonData.totalRows);
-      console.log(jsonData);
     } catch (error) {
       console.log("Error fetching data:", error);
     }
@@ -71,6 +86,11 @@ export default function PasswordTable() {
       headerName: "Password",
       flex: 1,
       editable: false,
+      renderCell: (params) => {
+        if (cookie) {
+          return <p>{decryptData(params.row.password, cookie)}</p>;
+        }
+      },
     },
     {
       field: "edit",

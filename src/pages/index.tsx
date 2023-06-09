@@ -5,6 +5,7 @@ import PasswordTable from "@/components/PasswordTable";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
 import { useEffect, useState } from "react";
+import crypto from "crypto";
 
 export default function Home() {
   const { user, error, isLoading } = useUser();
@@ -16,11 +17,12 @@ export default function Home() {
       try {
         const response = await fetch("/api/user");
         const data = await response.json();
-        setUserHasSetMasterPassword(data.HasSetMasterPassword);
+        setUserHasSetMasterPassword(data.hasSetMasterPassword);
       } catch (error) {
         console.log(error);
       }
     };
+    console.log(crypto.randomBytes(16).toString("hex"));
     fetchMasterPasswordBoolean();
   });
   if (isLoading) return <div>Loading...</div>;

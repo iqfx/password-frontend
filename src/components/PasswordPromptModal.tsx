@@ -11,7 +11,6 @@ import {
   OutlinedInput,
   Typography,
 } from "@mui/material";
-import ErrorIcon from "@mui/icons-material/Error";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const style = {
@@ -27,12 +26,28 @@ const style = {
   p: 4,
 };
 export default function PasswordPromptModal() {
+  let sendPasswordSetApiRequest = async () => {
+    try {
+      const response = await fetch("/api/user", { method: "post" });
+      const data = await response.json();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  let setCookie = (value: string) => {
+    document.cookie = "token=" + value + "; path=/;";
+  };
+
   const [masterPassword, setMasterPassword] = useState("");
   const [open, setOpen] = useState(true);
   const handleOpen = () => setOpen(true);
-  const handleClose = () => {
-    encryptPassword();
-    // setOpen(false);
+  const handleClose = async () => {
+    const encryptionToken = await encryptPassword();
+    if (encryptionToken) {
+      setCookie(encryptionToken);
+    }
+    await sendPasswordSetApiRequest();
+    setOpen(false);
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -43,7 +58,7 @@ export default function PasswordPromptModal() {
     event.preventDefault();
   };
 
-  async function encryptPassword(): Promise<void> {
+  async function encryptPassword(): Promise<string | undefined> {
     const salt: string = process.env.SALT ?? "test123";
     const iterations: number = parseInt(process.env.ITERATIONS ?? "1000");
     const keyLength: number = parseInt(process.env.KEYLENGTH ?? "32"); // 32 bytes = 256 bits
@@ -55,7 +70,7 @@ export default function PasswordPromptModal() {
         iterations,
         keyLength
       );
-      console.log("Derived encryption key:", encryptionKey);
+      return encryptionKey;
       // Use the derived encryption key for encryption or decryption operations
     } catch (error) {
       console.error("Error deriving encryption key:", error);
