@@ -1,6 +1,11 @@
 import { Alert, AlertTitle, Box, Snackbar, Typography } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState, useEffect, useCallback } from "react";
+import {
+  GridRow,
+  GridColumnHeaders,
+  DataGrid,
+  GridColDef,
+} from "@mui/x-data-grid";
+import { useState, useEffect, useCallback, memo } from "react";
 import EditPasswords from "@/components/EditModal";
 import DeleteModal from "./DeleteModal";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -106,8 +111,11 @@ export default function PasswordTable() {
     );
   }
   const handleClose = () => setOpen(false);
+
+  const MemoizedRow = memo(GridRow);
+  const MemoizedColumnHeaders = memo(GridColumnHeaders);
   return (
-    <div>
+    <div style={{ height: "100%", width: "100%" }}>
       <AddPasswordModal fetchData={fetchData} />
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
@@ -137,7 +145,7 @@ export default function PasswordTable() {
 
       <Box
         sx={{
-          height: 400,
+          height: 600,
           width: "70%",
           margin: "auto",
           display: "flex",
@@ -146,6 +154,10 @@ export default function PasswordTable() {
         }}
       >
         <DataGrid
+          slots={{
+            row: MemoizedRow,
+            columnHeaders: MemoizedColumnHeaders,
+          }}
           rows={data}
           components={{ Toolbar: DataGridTitle }}
           onClipboardCopy={(copiedString) => handleOpen(copiedString)}
