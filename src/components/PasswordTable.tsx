@@ -11,13 +11,15 @@ import DeleteModal from "./DeleteModal";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import AddPasswordModal from "./AddPasswordModal";
 import { decryptData } from "./decryptDataUtil";
+import PasswordPromptModal from "./PasswordPromptModal";
 export default function PasswordTable() {
   const { user, error, isLoading } = useUser();
   const [copiedData, setCopiedData] = useState("");
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
-
+  const [showMasterPasswordPrompt, setShowMasterPasswordPrompt] =
+    useState(false);
   // pagination
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
@@ -41,7 +43,6 @@ export default function PasswordTable() {
   };
   const cookie = getCookie();
   const HandlePaginationModelChange = async (params: any) => {
-    console.log(params);
     setPaginationModel(params);
     await fetchData();
   };
@@ -87,8 +88,10 @@ export default function PasswordTable() {
       flex: 1,
       editable: false,
       renderCell: (params) => {
-        if (cookie) {
-          return <p>{decryptData(params.row.password, cookie)}</p>;
+        try {
+          return <p>{decryptData(params.row.password, cookie ?? "")}</p>;
+        } catch (error) {
+          setShowMasterPasswordPrompt(true);
         }
       },
     },
@@ -98,7 +101,11 @@ export default function PasswordTable() {
       sortable: false,
       flex: 1,
       renderCell: (params) => {
-        return <EditPasswords password={params} fetchData={fetchData} />;
+        try {
+          return <EditPasswords password={params} fetchData={fetchData} />;
+        } catch (error) {
+          setShowMasterPasswordPrompt(true);
+        }
       },
     },
     {
@@ -136,6 +143,10 @@ export default function PasswordTable() {
   const MemoizedColumnHeaders = memo(GridColumnHeaders);
   return (
     <div style={{ height: "100%", width: "100%" }}>
+      {showMasterPasswordPrompt && (
+        <PasswordPromptModal handleFinish={fetchData} />
+      )}
+
       <AddPasswordModal fetchData={fetchData} />
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}

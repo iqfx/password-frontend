@@ -22,7 +22,6 @@ export default function Home() {
         console.log(error);
       }
     };
-    console.log(crypto.randomBytes(16).toString("hex"));
     fetchMasterPasswordBoolean();
   });
   if (isLoading) return <div>Loading...</div>;
@@ -31,15 +30,13 @@ export default function Home() {
     <UserProvider>
       <main className="" style={{ height: "100%", width: "100%" }}>
         <Navbar />
-        {!userHasSetMasterPassword && (
-          <div style={{ height: "100%", width: "100%" }}>
-            <PasswordPromptModal />
-          </div>
-        )}
+
+        {/* <div style={{ height: "100%", width: "100%" }}>
+          <PasswordPromptModal />
+        </div> */}
         {user && userHasSetMasterPassword && (
           <div style={{ height: "100%", width: "100%" }}>
             <E2EETEST />
-
             <PasswordTable />
           </div>
         )}

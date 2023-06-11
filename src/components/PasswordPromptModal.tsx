@@ -25,11 +25,10 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export default function PasswordPromptModal() {
+export default function PasswordPromptModal({ handleFinish }: any) {
   let sendPasswordSetApiRequest = async () => {
     try {
-      const response = await fetch("/api/user", { method: "post" });
-      const data = await response.json();
+      await fetch("/api/user", { method: "post" });
     } catch (error) {
       console.log(error);
     }
@@ -37,17 +36,37 @@ export default function PasswordPromptModal() {
   let setCookie = (value: string) => {
     document.cookie = "token=" + value + "; path=/;";
   };
+  const getCookie = () => {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split("; ");
 
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split("=");
+      const cookieName = cookie[0];
+      const cookieValue = cookie[1];
+      if (cookieName === "token") {
+        return cookieValue;
+      }
+    }
+
+    return null;
+  };
+  const cookie = getCookie();
   const [masterPassword, setMasterPassword] = useState("");
   const [open, setOpen] = useState(true);
   const handleOpen = () => setOpen(true);
   const handleClose = async () => {
+    setOpen(false);
+  };
+
+  const handleSubmit = async () => {
     const encryptionToken = await encryptPassword();
     if (encryptionToken) {
       setCookie(encryptionToken);
     }
     await sendPasswordSetApiRequest();
-    setOpen(false);
+    handleClose();
+    await handleFinish();
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -94,7 +113,7 @@ export default function PasswordPromptModal() {
       >
         <Box sx={style}>
           <Typography id="transition-modal-title" variant="h6" component="h2">
-            Set master password
+            Enter master password
           </Typography>
           <FormControl sx={{ width: "100%" }} variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">
@@ -124,7 +143,7 @@ export default function PasswordPromptModal() {
           </FormControl>
           <Button
             style={{ float: "right", marginTop: "1em" }}
-            onClick={handleClose}
+            onClick={handleSubmit}
           >
             Set Password
           </Button>

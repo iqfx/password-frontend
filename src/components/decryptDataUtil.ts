@@ -2,7 +2,6 @@ import crypto from "crypto";
 
 function decryptData(encryptedData: string, encryptionKey: string): string {
   try {
-    console.log(encryptedData);
     const [ivString, encryptedString] = encryptedData.split(":");
     const iv = Buffer.from(ivString, "hex");
     const buffer = Buffer.from(encryptionKey, "hex");
@@ -12,7 +11,7 @@ function decryptData(encryptedData: string, encryptionKey: string): string {
     decryptedData += decipher.final("utf8");
     return decryptedData;
   } catch (error) {
-    console.error("Error decrypting data:", error);
+    // console.error("Error decrypting data:", error);
     throw error;
   }
 }

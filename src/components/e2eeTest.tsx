@@ -65,7 +65,6 @@ export default function E2EETEST() {
         iterations,
         keyLength
       );
-      console.log("Derived encryption key:", encryptionKey);
       // Use the derived encryption key for encryption or decryption operations
     } catch (error) {
       console.error("Error deriving encryption key:", error);

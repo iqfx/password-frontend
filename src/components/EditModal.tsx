@@ -7,10 +7,12 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import EditIcon from "@mui/icons-material/Edit";
 import SendIcon from "@mui/icons-material/Send";
+import { decryptData } from "./decryptDataUtil";
+import { encryptData } from "./encryptDataUtil";
 const style = {
   position: "absolute" as "absolute",
   top: "50%",
@@ -39,26 +41,60 @@ export default function EditPasswords({
 }: EditModalParams) {
   const [editmodal, setEditmodal] = useState(false);
   const handleOpen = () => setEditmodal(true);
+  const [submitForm, setSubmitForm] = useState(false);
+
   const handleClose = () => {
     handleReset();
     setEditmodal(false);
   };
 
-  const handleReset = () => {
-    setFormData({
-      Name: password.row.name,
-      UserName: password.row.userName,
-      Password: password.row.password,
-      URL: password.row.url,
-    });
-  };
+  const getCookie = () => {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split("; ");
 
-  const [formData, setFormData] = useState<FormData>({
-    Name: password.row.name,
-    UserName: password.row.userName,
-    Password: password.row.password,
-    URL: password.row.url,
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split("=");
+      const cookieName = cookie[0];
+      const cookieValue = cookie[1];
+
+      if (cookieName === "token") {
+        return cookieValue;
+      }
+    }
+
+    return null;
+  };
+  const cookie = getCookie();
+  const handleReset = () => {
+    try {
+      setFormData({
+        Name: password.row.name,
+        UserName: password.row.userName,
+        Password: decryptData(password.row.password, cookie ?? ""),
+        URL: password.row.url,
+      });
+    } catch (error) {
+      throw new Error();
+    }
+  };
+  const [formData, setFormData] = useState<FormData>(() => {
+    try {
+      return {
+        Name: password.row.name,
+        UserName: password.row.userName,
+        Password: decryptData(password.row.password, cookie ?? ""),
+        URL: password.row.url,
+      };
+    } catch (error) {
+      return {
+        Name: "",
+        UserName: "",
+        Password: "",
+        URL: "",
+      };
+    }
   });
+
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setFormData((formData) => ({
@@ -67,14 +103,32 @@ export default function EditPasswords({
     }));
   };
   const handleSubmit = async () => {
-    await fetch("/api/password/" + password.row.id, {
-      method: "PUT",
-      body: JSON.stringify(formData),
-    }).then(() => {
-      handleClose();
-      fetchData();
-    });
+    if (cookie) {
+      const encryptedPassword = encryptData(formData.Password, cookie);
+      setFormData((formData) => ({
+        ...formData,
+        Password: encryptedPassword,
+      }));
+      setSubmitForm(true);
+    }
   };
+
+  useEffect(() => {
+    if (submitForm) {
+      const submit = async () => {
+        await fetch("/api/password/" + password.row.id, {
+          method: "PUT",
+          body: JSON.stringify(formData),
+        }).then(() => {
+          handleClose();
+          fetchData();
+        });
+      };
+      submit();
+      setSubmitForm(false);
+    }
+  });
+
   return (
     <div>
       <Button startIcon={<EditIcon />} onClick={handleOpen}>
@@ -96,7 +150,7 @@ export default function EditPasswords({
         <Fade in={editmodal}>
           <Box sx={style}>
             <Typography id="transition-modal-title" variant="h6" component="h2">
-              Edit {password.row.passwordName}
+              Edit {formData.Name}
             </Typography>
             <Typography
               component={"span"}
