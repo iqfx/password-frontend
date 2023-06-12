@@ -9,32 +9,14 @@ import crypto from "crypto";
 
 export default function Home() {
   const { user, error, isLoading } = useUser();
-  const [userHasSetMasterPassword, setUserHasSetMasterPassword] =
-    useState(false);
 
-  useEffect(() => {
-    let fetchMasterPasswordBoolean = async () => {
-      try {
-        const response = await fetch("/api/user");
-        const data = await response.json();
-        setUserHasSetMasterPassword(data.hasSetMasterPassword);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchMasterPasswordBoolean();
-  });
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
   return (
     <UserProvider>
       <main className="" style={{ height: "100%", width: "100%" }}>
         <Navbar />
-
-        {/* <div style={{ height: "100%", width: "100%" }}>
-          <PasswordPromptModal />
-        </div> */}
-        {user && userHasSetMasterPassword && (
+        {user && (
           <div style={{ height: "100%", width: "100%" }}>
             <E2EETEST />
             <PasswordTable />

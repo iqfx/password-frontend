@@ -18,8 +18,25 @@ export default function PasswordTable() {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
+
   const [showMasterPasswordPrompt, setShowMasterPasswordPrompt] =
     useState(false);
+  const [userHasSetMasterPassword, setUserHasSetMasterPassword] =
+    useState(false);
+
+  useEffect(() => {
+    let fetchMasterPasswordBoolean = async () => {
+      try {
+        const response = await fetch("/api/user", {method: "GET"});
+        const data = await response.json();
+        setShowMasterPasswordPrompt(data.hasSetMasterPassword);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMasterPasswordBoolean();
+  });
+
   // pagination
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 25,
