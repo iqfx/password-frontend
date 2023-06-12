@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Backdrop from "@mui/material/Backdrop";
 import EditIcon from "@mui/icons-material/Edit";
 import SendIcon from "@mui/icons-material/Send";
@@ -34,10 +34,12 @@ interface FormData {
 interface EditModalParams {
   password: any;
   fetchData: () => void;
+  setPasswordModal: Dispatch<SetStateAction<boolean>>;
 }
 export default function EditPasswords({
   password,
   fetchData,
+  setPasswordModal,
 }: EditModalParams) {
   const [editmodal, setEditmodal] = useState(false);
   const handleOpen = () => setEditmodal(true);
@@ -74,7 +76,7 @@ export default function EditPasswords({
         URL: password.row.url,
       });
     } catch (error) {
-      throw new Error();
+      setPasswordModal(true);
     }
   };
   const [formData, setFormData] = useState<FormData>(() => {

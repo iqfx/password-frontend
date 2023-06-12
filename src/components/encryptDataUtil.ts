@@ -6,7 +6,6 @@ function encryptData(data: string, encryptionKey: string): string {
     const iv = crypto.randomBytes(16); // Generate a random IV (Initialization Vector)
     const buffer = Buffer.from(encryptionKey, "hex");
     const cipher = crypto.createCipheriv("aes-256-cbc", buffer, iv);
-
     let encryptedData = cipher.update(data, "utf8", "hex");
     encryptedData += cipher.final("hex");
 

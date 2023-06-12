@@ -18,24 +18,14 @@ export default function PasswordTable() {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [totalRows, setTotalRows] = useState(0);
+  const [dataFetched, setDataFetched] = useState(false);
 
   const [showMasterPasswordPrompt, setShowMasterPasswordPrompt] =
     useState(false);
-  const [userHasSetMasterPassword, setUserHasSetMasterPassword] =
-    useState(false);
 
-  useEffect(() => {
-    let fetchMasterPasswordBoolean = async () => {
-      try {
-        const response = await fetch("/api/user", {method: "GET"});
-        const data = await response.json();
-        setShowMasterPasswordPrompt(data.hasSetMasterPassword);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchMasterPasswordBoolean();
-  });
+  // useEffect(() => {
+
+  // });
 
   // pagination
   const [paginationModel, setPaginationModel] = useState({
@@ -75,13 +65,25 @@ export default function PasswordTable() {
       const jsonData = await response.json();
       setData(jsonData.passwords);
       setTotalRows(jsonData.totalRows);
+      setDataFetched(true);
     } catch (error) {
       console.log("Error fetching data:", error);
     }
   }, [paginationModel]);
-
   useEffect(() => {
-    fetchData();
+    if (!dataFetched) {
+      fetchData();
+    }
+    let fetchMasterPasswordBoolean = async () => {
+      try {
+        const response = await fetch("/api/user", { method: "GET" });
+        const data = await response.json();
+        setShowMasterPasswordPrompt(!data.hasSetMasterPassword);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchMasterPasswordBoolean();
   }, [fetchData]);
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>{error.message}</div>;
@@ -108,6 +110,7 @@ export default function PasswordTable() {
         try {
           return <p>{decryptData(params.row.password, cookie ?? "")}</p>;
         } catch (error) {
+          console.log(error);
           setShowMasterPasswordPrompt(true);
         }
       },
@@ -119,9 +122,16 @@ export default function PasswordTable() {
       flex: 1,
       renderCell: (params) => {
         try {
-          return <EditPasswords password={params} fetchData={fetchData} />;
+          return (
+            <EditPasswords
+              setPasswordModal={setShowMasterPasswordPrompt}
+              password={params}
+              fetchData={fetchData}
+            />
+          );
         } catch (error) {
-          setShowMasterPasswordPrompt(true);
+          // console.log(error);
+          console.log(setShowMasterPasswordPrompt(true));
         }
       },
     },
@@ -161,7 +171,10 @@ export default function PasswordTable() {
   return (
     <div style={{ height: "100%", width: "100%" }}>
       {showMasterPasswordPrompt && (
-        <PasswordPromptModal handleFinish={fetchData} />
+        <PasswordPromptModal
+          setPasswordModal={setShowMasterPasswordPrompt}
+          handleFinish={fetchData}
+        />
       )}
 
       <AddPasswordModal fetchData={fetchData} />

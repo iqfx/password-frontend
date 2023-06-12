@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import { deriveEncryptionKey } from "./pbkdf2Util";
 import {
   Box,
@@ -25,7 +25,14 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-export default function PasswordPromptModal({ handleFinish }: any) {
+interface EditModalParams {
+  handleFinish: any;
+  setPasswordModal: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const PasswordPromptModal: React.FC<EditModalParams> = ({
+  handleFinish,
+  setPasswordModal,
+}) => {
   let sendPasswordSetApiRequest = async () => {
     try {
       await fetch("/api/user", { method: "post" });
@@ -56,6 +63,7 @@ export default function PasswordPromptModal({ handleFinish }: any) {
   const [open, setOpen] = useState(true);
   const handleOpen = () => setOpen(true);
   const handleClose = async () => {
+    setPasswordModal(false);
     setOpen(false);
   };
 
@@ -151,4 +159,6 @@ export default function PasswordPromptModal({ handleFinish }: any) {
       </Modal>
     </div>
   );
-}
+};
+
+export default PasswordPromptModal;
