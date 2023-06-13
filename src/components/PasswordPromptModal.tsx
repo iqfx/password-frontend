@@ -73,8 +73,10 @@ const PasswordPromptModal: React.FC<EditModalParams> = ({
       setCookie(encryptionToken);
     }
     await sendPasswordSetApiRequest();
-    handleClose();
-    await handleFinish();
+    await handleFinish().then(()=>{
+      handleClose();
+    });
+
   };
 
   const [showPassword, setShowPassword] = useState(false);

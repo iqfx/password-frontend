@@ -5,7 +5,7 @@ export default handleAuth({ async login(req, res) {
       await handleLogin(req, res, {
         authorizationParams: {
           audience: 'https://localhost',
-          scope: 'vault:default openid'
+          scope: 'openid'
         },
       });
     } catch (error: any) {

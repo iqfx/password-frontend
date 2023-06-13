@@ -5,7 +5,7 @@ export default withApiAuthRequired(async function products(req, res) {
   const query = req.query;
   const passwordid = { query };
   const { accessToken } = await getAccessToken(req, res, {
-    scopes: ["vault:default"],
+    scopes: ["openid"],
   });
   fetch(
     process.env.PASSWORD_SERVICE_URL +

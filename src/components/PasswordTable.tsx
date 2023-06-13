@@ -107,12 +107,14 @@ export default function PasswordTable() {
       flex: 1,
       editable: false,
       renderCell: (params) => {
-        try {
-          return <p>{decryptData(params.row.password, cookie ?? "")}</p>;
-        } catch (error) {
-          console.log(error);
-          setShowMasterPasswordPrompt(true);
+        if(!showMasterPasswordPrompt) {
+          try {
+            return <p>{decryptData(params.row.password, cookie ?? "")}</p>;
+          } catch (error) {
+            console.log("show");
+            setShowMasterPasswordPrompt(true);
         }
+      }
       },
     },
     {
@@ -121,17 +123,19 @@ export default function PasswordTable() {
       sortable: false,
       flex: 1,
       renderCell: (params) => {
-        try {
-          return (
-            <EditPasswords
-              setPasswordModal={setShowMasterPasswordPrompt}
-              password={params}
-              fetchData={fetchData}
-            />
-          );
-        } catch (error) {
-          // console.log(error);
-          console.log(setShowMasterPasswordPrompt(true));
+        if(!showMasterPasswordPrompt) {
+          try {
+            return (
+              <EditPasswords
+                setPasswordModal={setShowMasterPasswordPrompt}
+                password={params}
+                fetchData={fetchData}
+              />
+            );
+          } catch (error) {
+            // console.log(error);
+            console.log(setShowMasterPasswordPrompt(true));
+          }
         }
       },
     },
