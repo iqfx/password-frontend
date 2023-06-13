@@ -8,7 +8,7 @@ metadata:
     acme.cert-manager.io/http01-edit-in-place: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/rewrite-target-regex: "true"
-    # nginx.ingress.kubernetes.io/auth-url: "http://auth-service.default.svc.cluster.local/auth/verify?route=$request_uri&method=$request_method"
+    nginx.ingress.kubernetes.io/auth-url: "http://auth-service.default.svc.cluster.local/auth/verify?route=$request_uri&method=$request_method"
     nginx.ingress.kubernetes.io/auth-response-headers: X-User, X-Roles
 spec:
   tls:
@@ -24,5 +24,48 @@ spec:
         backend:
           service:
             name: password-frontend-service
+            port:
+              number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: password-backend-ingress-tls
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    acme.cert-manager.io/http01-edit-in-place: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/rewrite-target-regex: "true"
+    nginx.ingress.kubernetes.io/auth-url: "http://auth-service.default.svc.cluster.local/auth/verify?route=$request_uri&method=$request_method"
+    nginx.ingress.kubernetes.io/auth-response-headers: X-User, X-Roles
+    nginx.ingress.kubernetes.io/auth-snippet: |
+      proxy_set_header Content-Type "";
+    nginx.org/proxy-read-timeout: "20s"
+    nginx.org/proxy-connect-timeout: "30s"
+    nginx.ingress.kubernetes.io/client-max-body-size: "2g"
+    nginx.ingress.kubernetes.io/proxy-body-size: "2g"
+
+spec:
+  tls:
+  - hosts:
+    - api.password.iqfx.nl
+    secretName: password-backend-ingress-tls
+  rules:
+  - host: api.password.iqfx.nl
+    http:
+      paths:
+      - path: /api/usermanagement(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: usermanagement-service
+            port:
+              number: 80
+      - path: /api/password(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: password-service
             port:
               number: 80

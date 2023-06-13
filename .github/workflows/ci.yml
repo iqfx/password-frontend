@@ -49,7 +49,10 @@ jobs:
           echo AUTH0_CLIENT_ID=${{ secrets.AUTH0_CLIENT_ID }} >> .env.production
           echo AUTH0_CLIENT_SECRET=${{ secrets.AUTH0_CLIENT_SECRET }} >> .env.production
           echo PASSWORD_SERVICE_URL=${{ secrets.PASSWORD_SERVICE_URL }} >> .env.production
-
+          echo USERMANAGEMENT_SERVICE_URL=${{ secrets.USERMANAGEMENT_SERVICE_URL }} >> .env.production
+          echo SALT=${{ secrets.SALT }} >> .env.production
+          echo ITERATIONS=${{ secrets.ITERATIONS }} >> .env.production
+          echo KEYLENGTH=${{ secrets.KEYLENGTH }} >> .env.production
 
       - name: build docker image
         run: docker build -t "iqfx/password-frontend:latest" ./
