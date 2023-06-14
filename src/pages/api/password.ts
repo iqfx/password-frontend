@@ -6,12 +6,11 @@ export default withApiAuthRequired(async function products(req, res) {
   const { accessToken } = await getAccessToken(req, res, {
     scopes: ["openid"],
   });
-  const { pageNumber = 1, pageSize = 10 } = req.query;
+  const { pageNumber = 0, pageSize = 10 } = req.query;
   fetch(
     process.env.PASSWORD_SERVICE_URL +
       "/password?pageNumber=" +
       pageNumber +
-      1 +
       "&pageSize=" +
       pageSize,
     {
