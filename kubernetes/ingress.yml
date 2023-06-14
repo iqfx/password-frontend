@@ -8,7 +8,6 @@ metadata:
     acme.cert-manager.io/http01-edit-in-place: "true"
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/rewrite-target-regex: "true"
-    nginx.ingress.kubernetes.io/auth-url: "http://auth-service.default.svc.cluster.local/auth/verify?route=$request_uri&method=$request_method"
     nginx.ingress.kubernetes.io/auth-response-headers: X-User, X-Roles
 spec:
   tls:
