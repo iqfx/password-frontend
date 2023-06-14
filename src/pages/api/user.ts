@@ -4,7 +4,7 @@ export default withApiAuthRequired(async function products(req, res) {
   // If your Access Token is expired and you have a Refresh Token
   // `getAccessToken` will fetch you a new one using the `refresh_token` grant
   const { accessToken } = await getAccessToken(req, res, {
-    scopes: ["vault:default"],
+    scopes: ["openid"],
   });
   fetch(process.env.USERMANAGEMENT_SERVICE_URL + "/user", {
     method: req.method,
