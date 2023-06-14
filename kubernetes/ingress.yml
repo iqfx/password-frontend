@@ -61,7 +61,7 @@ spec:
             name: usermanagement-service
             port:
               number: 80
-      - path: /api/password(/|$)(.*)
+      - path: /api/passwords(/|$)(.*)
         pathType: Prefix
         backend:
           service:
